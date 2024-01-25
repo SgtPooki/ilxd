@@ -13,13 +13,13 @@ RUN cd crypto/rust && cargo build --release && \
     cd ../../zk/rust && cargo build --release
 
 # Second stage: Go build using the official Go image
-FROM golang:1.21 as go-builder
+FROM golang:1.21.5 as go-builder
 
 # Install OpenSSL development libraries
 RUN apt-get update && apt-get install -y \
     build-essential \
-    libssl-dev \
-    pkg-config
+    pkg-config \
+    libssl-dev
 
 # Set your working directory for Go components
 WORKDIR /go/src/app
@@ -41,7 +41,13 @@ RUN go build -o /go/bin/ilxd
 RUN cd cli && go build -o /go/bin/ilxcli
 
 # Final stage: setup the runtime environment
-FROM ubuntu:22.04
+FROM ubuntu:latest
+
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy the built binaries from previous stages
 COPY --from=go-builder /go/bin/ilxd /usr/local/bin/ilxd

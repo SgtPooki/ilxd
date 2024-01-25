@@ -1072,7 +1072,7 @@ func (x *Stake) Execute(args []string) error {
 	})
 	if err != nil {
 		spinner.Fail(fmt.Sprintf("Error proving transaction: %s", err.Error()))
-		return err
+		return nil
 	}
 
 	spinner.Success("Stake transaction broadcast successfully")
